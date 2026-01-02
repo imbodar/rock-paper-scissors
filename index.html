@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two Player Dot Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #1a1a1a;
+            font-family: Arial, sans-serif;
+        }
+
+        #gameCanvas {
+            border: 2px solid #333;
+            background-color: black;
+        }
+
+        .instructions {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .instructions h3 {
+            margin: 0 0 10px 0;
+        }
+
+        .instructions p {
+            margin: 5px 0;
+        }
+
+        .player1 {
+            color: #4CAF50;
+        }
+
+        .player2 {
+            color: #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions">
+        <h3>Two Player Dot Game</h3>
+        <p class="player1">Player 1 (Green): WASD keys</p>
+        <p class="player2">Player 2 (Blue): Arrow keys</p>
+    </div>
+
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Player 1 (WASD)
+        const player1 = {
+            x: 200,
+            y: 300,
+            radius: 15,
+            color: '#4CAF50',
+            speed: 5,
+            vx: 0,
+            vy: 0
+        };
+
+        // Player 2 (Arrow keys)
+        const player2 = {
+            x: 600,
+            y: 300,
+            radius: 15,
+            color: '#2196F3',
+            speed: 5,
+            vx: 0,
+            vy: 0
+        };
+
+        // Track which keys are currently pressed
+        const keys = {};
+
+        // Key down event
+        document.addEventListener('keydown', (e) => {
+            keys[e.key.toLowerCase()] = true;
+            e.preventDefault();
+        });
+
+        // Key up event
+        document.addEventListener('keyup', (e) => {
+            keys[e.key.toLowerCase()] = false;
+            e.preventDefault();
+        });
+
+        // Update player velocities based on key presses
+        function updatePlayerMovement() {
+            // Player 1 (WASD)
+            player1.vx = 0;
+            player1.vy = 0;
+
+            if (keys['w']) player1.vy = -player1.speed;
+            if (keys['s']) player1.vy = player1.speed;
+            if (keys['a']) player1.vx = -player1.speed;
+            if (keys['d']) player1.vx = player1.speed;
+
+            // Player 2 (Arrow keys)
+            player2.vx = 0;
+            player2.vy = 0;
+
+            if (keys['arrowup']) player2.vy = -player2.speed;
+            if (keys['arrowdown']) player2.vy = player2.speed;
+            if (keys['arrowleft']) player2.vx = -player2.speed;
+            if (keys['arrowright']) player2.vx = player2.speed;
+        }
+
+        // Update player positions
+        function updatePlayers() {
+            // Update Player 1
+            player1.x += player1.vx;
+            player1.y += player1.vy;
+
+            // Keep Player 1 within bounds
+            player1.x = Math.max(player1.radius, Math.min(canvas.width - player1.radius, player1.x));
+            player1.y = Math.max(player1.radius, Math.min(canvas.height - player1.radius, player1.y));
+
+            // Update Player 2
+            player2.x += player2.vx;
+            player2.y += player2.vy;
+
+            // Keep Player 2 within bounds
+            player2.x = Math.max(player2.radius, Math.min(canvas.width - player2.radius, player2.x));
+            player2.y = Math.max(player2.radius, Math.min(canvas.height - player2.radius, player2.y));
+        }
+
+        // Draw a player dot
+        function drawPlayer(player) {
+            ctx.beginPath();
+            ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+            ctx.fillStyle = player.color;
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        // Main game loop
+        function gameLoop() {
+            // Clear canvas (black background)
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Update movement based on keys
+            updatePlayerMovement();
+
+            // Update player positions
+            updatePlayers();
+
+            // Draw players
+            drawPlayer(player1);
+            drawPlayer(player2);
+
+            // Continue the loop
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start the game
+        gameLoop();
+    </script>
+</body>
+</html>
